@@ -6,6 +6,8 @@
 package tests;
 
 import com.eyalgames.chess.camera.ImagePanel;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -55,6 +57,13 @@ public class TestDrawing {
 
         try {
             img = ImageIO.read(new File("../captures/1.jpg")); // eventually C:\\ImageTest\\pic2.jpg
+            
+            Graphics2D g2d = img.createGraphics();
+            g2d.setBackground(Color.BLUE);
+            g2d.setColor(Color.RED);
+            g2d.drawLine(0, 0, 100, 200);
+            
+            
             JFrame dialog = new JFrame();
             ImagePanel imagePanel = new ImagePanel(img);
             dialog.add(imagePanel);
