@@ -6,6 +6,7 @@
 package tests;
 
 import com.eyalgames.chess.camera.ImagePanel;
+import com.eyalgames.chess.camera.RgbCalculator;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -25,8 +26,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
- * @author Boris
+ * A general place to test new algorithms
  */
 public class TestDrawing {
 
@@ -55,18 +55,28 @@ public class TestDrawing {
     @Test
     public void testDrawing() {
         BufferedImage img = null;
+        BufferedImage imgs[] = new BufferedImage[2];
 
         try {
+            imgs[0] = ImageIO.read(new File("../captures/4.jpg")); // eventually C:\\ImageTest\\pic2.jpg
+            imgs[1] = ImageIO.read(new File("../captures/5.jpg")); // eventually C:\\ImageTest\\pic2.jpg
             img = ImageIO.read(new File("../captures/5.jpg")); // eventually C:\\ImageTest\\pic2.jpg
+            for (int x = 0; x < img.getWidth(); x++) {
+                for (int y = 0; y < img.getHeight(); y++) {
+                    int rgbDiff=RgbCalculator.absoluteDifference(imgs[0].getRGB(x, y), imgs[1].getRGB(x, y));
+                    img.setRGB(x, y, rgbDiff);
+                }
+            }
+
             Graphics2D g2d = img.createGraphics();
             g2d.setBackground(Color.BLUE);
             g2d.setColor(Color.RED);
 
             Vector3D[] corners = new Vector3D[]{
-                new Vector3D(new double[]{172, 78,0}),
-                new Vector3D(new double[]{455, 71,0}),
-                new Vector3D(new double[]{507, 350,0}),
-                new Vector3D(new double[]{143, 362,0})
+                new Vector3D(new double[]{172, 78, 0}),
+                new Vector3D(new double[]{455, 71, 0}),
+                new Vector3D(new double[]{507, 350, 0}),
+                new Vector3D(new double[]{143, 362, 0})
             };
             //draw lines from corner to corner
             for (int c = 0; c < corners.length; c++) {
@@ -77,22 +87,22 @@ public class TestDrawing {
 
             for (int x = 0; x < img.getWidth(); x++) {
                 for (int y = 0; y < img.getHeight(); y++) {
-                    Vector3D currentPos = new Vector3D(new double[]{x, y,0});
+                    Vector3D currentPos = new Vector3D(new double[]{x, y, 0});
                     double[] normalizedCoordinates = new double[2];
                     {
                         //normalize x coordinate
                         Line floor = new Line(corners[0], corners[3], 0.5);
                         Line roof = new Line(corners[1], corners[2], 0.5);
-                        double floorDistance = floor.distance(currentPos)*1/corners[0].distance(corners[3]);
-                        double roofDistance = roof.distance(currentPos)*1/corners[1].distance(corners[2]);
+                        double floorDistance = floor.distance(currentPos) * 1 / corners[0].distance(corners[3]);
+                        double roofDistance = roof.distance(currentPos) * 1 / corners[1].distance(corners[2]);
                         normalizedCoordinates[0] = interpolate(0, 1, floorDistance / (floorDistance + roofDistance));
                     }
                     {
                         //normalize y coordinate
                         Line floor = new Line(corners[0], corners[1], 0.5);
                         Line roof = new Line(corners[2], corners[3], 0.5);
-                        double floorDistance = floor.distance(currentPos)*1/corners[0].distance(corners[1]);
-                        double roofDistance = roof.distance(currentPos)*1/corners[2].distance(corners[3]);
+                        double floorDistance = floor.distance(currentPos) * 1 / corners[0].distance(corners[1]);
+                        double roofDistance = roof.distance(currentPos) * 1 / corners[2].distance(corners[3]);
                         normalizedCoordinates[1] = interpolate(0, 1, floorDistance / (floorDistance + roofDistance));
                     }
 
@@ -126,6 +136,6 @@ public class TestDrawing {
     }
 
     private double interpolate(double v1, double v2, double i) {
-        return v1+(v2-v1)*i;
+        return v1 + (v2 - v1) * i;
     }
 }
